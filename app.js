@@ -1,31 +1,30 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
-const dotenv = require("dotenv"); // Add dotenv for environment variables
+const dotenv = require("dotenv");
+const cors = require("cors");
 
-dotenv.config(); // Load environment variables from a .env file
+dotenv.config();
 
 const app = express();
 
-// Middleware to parse JSON and form data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Define the API endpoint
+app.use(cors());
+
 app.post("/api/send-email", (req, res) => {
   const { fullName, email, cardType, address } = req.body;
 
-  // Create a transporter object using your email credentials
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-      user: process.env.MYEMAIL, // Use environment variable for email
-      pass: process.env.MYEMAILPASSWORD, // Use environment variable for password
+      user: process.env.MYEMAIL,
+      pass: process.env.MYEMAILPASSWORD,
     },
-    secure: false, // Set secure to false if you're using a non-secure connection
+    secure: false,
   });
 
-  // Create an HTML-formatted message with CSS styles
   const htmlMessage = `
     <html>
       <head>
@@ -55,19 +54,17 @@ app.post("/api/send-email", (req, res) => {
     </html>
   `;
 
-  // Set up email data
   const mailOptions = {
-    from: process.env.MYEMAIL, // Use environment variable for sender email
+    from: process.env.MYEMAIL,
     to: "echinedu007@gmail.com",
     subject: "Order Details for " + fullName,
-    html: htmlMessage, // Set the email content to the HTML-formatted message
+    html: htmlMessage,
   };
 
-  // Send the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error(error);
-      res.status(500).json({ error: "Error sending email" });
+      res.status(500).json({ fullName: "Error sending email" });
     } else {
       console.log("Email sent: " + info.response);
       res.json({ email: "Email sent successfully" });
