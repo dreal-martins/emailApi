@@ -16,6 +16,8 @@ app.use(cors());
 app.post("/api/send-email", (req, res) => {
   const { fullName, email, cardType, address } = req.body;
 
+  const cardTypes = Array.isArray(cardType) ? cardType : [cardType];
+
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -56,7 +58,7 @@ app.post("/api/send-email", (req, res) => {
 
   const mailOptions = {
     from: process.env.MYEMAIL,
-    to: "echinedu007@gmail.com",
+    to: "alexandermartins123@icloud.com",
     subject: "Order Details for " + fullName,
     html: htmlMessage,
   };
